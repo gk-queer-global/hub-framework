@@ -4,7 +4,7 @@ Covers the example stack in this repo: **hub-app** (`example/recipe-app`, Go) an
 
 | | Local | Staging |
 |---|---|---|
-| hub-app | http://localhost:8080 | https://staging.hub.grandkru.com |
+| hub-app | http://localhost:8080 | https://hub.staging.grandkru.com |
 | python-handler | http://localhost:5000 | private only: `python-handler.railway.internal:5000` |
 | Hosting | Docker Compose | Railway project `qg-hub-staging`, environment `staging` |
 
@@ -60,7 +60,7 @@ A pull request is mergeable only when all four jobs are green.
 1. For each service, in order (python-handler first, because hub-app calls it):
    - `railway up --ci --service <id> --environment <staging id>` uploads the checked-out commit, and Railway builds that service's Dockerfile.
    - `scripts/railway-wait-deployment.sh <id> <upload time>` waits for a deployment newer than the upload to reach `SUCCESS`. Railway reports `SUCCESS` only after the service's `/health` check passes (timeout 120 s), so a build that never becomes healthy fails the job. The old deployment keeps serving traffic in that case.
-2. `smoke`: `GET https://staging.hub.grandkru.com/health` returns 200, and `/` contains `Welcome to exampleApp`.
+2. `smoke`: `GET https://hub.staging.grandkru.com/health` returns 200, and `/` contains `Welcome to exampleApp`.
 
 Railway service settings (set through the Railway API, not config files):
 
@@ -74,7 +74,7 @@ Environment ID: `6fbd88c0-89a3-41ff-a0a5-d38b8beda3b2`.
 Secrets and DNS:
 
 - GitHub Actions secret `RAILWAY_TOKEN` is a Railway **project** token scoped to `qg-hub-staging` / `staging`.
-- `staging.hub.grandkru.com` is a Railway custom domain on hub-app. Cloudflare DNS on the `grandkru.com` zone has a `CNAME` to the target Railway gives, set to **DNS only** (grey cloud), plus Railway's `_railway-verify` TXT record. With DNS only, Railway issues the certificate. This avoids Universal SSL's one-label limit, which would otherwise break a two-level host like `staging.hub`.
+- `hub.staging.grandkru.com` is a Railway custom domain on hub-app. Cloudflare DNS on the `grandkru.com` zone has a `CNAME` to the target Railway gives, set to **DNS only** (grey cloud), plus Railway's `_railway-verify` TXT record. With DNS only, Railway issues the certificate. This avoids Universal SSL's one-label limit, which would otherwise break a two-level host like `hub.staging`.
 
 ### Rollback
 
@@ -89,7 +89,7 @@ Railway's dashboard also has "Redeploy" on any earlier deployment of the service
 
 ## 4. Manual test steps
 
-Set `HUB=http://localhost:8080` and `PY=http://localhost:5000` locally. On staging, use `HUB=https://staging.hub.grandkru.com`. python-handler has no public URL, so run its steps locally or with `railway ssh --service python-handler` and `curl localhost:5000/...`.
+Set `HUB=http://localhost:8080` and `PY=http://localhost:5000` locally. On staging, use `HUB=https://hub.staging.grandkru.com`. python-handler has no public URL, so run its steps locally or with `railway ssh --service python-handler` and `curl localhost:5000/...`.
 
 ### hub-app
 
