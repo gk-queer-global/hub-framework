@@ -5,7 +5,7 @@ name: Deploy staging
 # reports the deployment SUCCESS, which happens only after /health passes.
 #
 # Railway project qg-hub-staging, environment staging:
-#   hub-app        Dockerfile                       /health  -> staging.hub.grandkru.com
+#   hub-app        Dockerfile                       /health  -> hub.staging.grandkru.com
 #   python-handler integrations/python/Dockerfile   /health  (private: python-handler.railway.internal:5000)
 
 on:
@@ -25,7 +25,7 @@ concurrency:
 env:
   RAILWAY_CLI_VERSION: 5.63.1
   RAILWAY_ENVIRONMENT_ID: 6fbd88c0-89a3-41ff-a0a5-d38b8beda3b2
-  HUB_URL: https://staging.hub.grandkru.com
+  HUB_URL: https://hub.staging.grandkru.com
 
 jobs:
   railway:
@@ -66,7 +66,7 @@ jobs:
         run: scripts/railway-wait-deployment.sh "${{ matrix.service_id }}" "${{ steps.up.outputs.not_before }}"
 
   smoke:
-    name: smoke test staging.hub.grandkru.com
+    name: smoke test hub.staging.grandkru.com
     needs: railway
     runs-on: ubuntu-latest
     steps:
